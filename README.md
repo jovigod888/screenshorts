@@ -21,3 +21,6 @@ Antes de rodar o projeto, certifique-se de ter o Python instalado em sua máquin
 
 ```bash
 pip install customtkinter easyocr numpy pyautogui pyperclip pillow pywin32
+
+
+
