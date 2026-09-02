@@ -216,3 +216,29 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Ambiente Virtual
+venv/
+.venv/
+env/
+ENV/
+
+# Arquivos e cache do Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Configurações do VS Code e IDEs
+.vscode/
+.idea/
+
+# Arquivos temporários do Sistema Operacional
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Opcional: Ignorar prints/telas geradas localmente durante testes
+# Descomente a linha abaixo se não quiser versionar as imagens salvas:
+# *.png
