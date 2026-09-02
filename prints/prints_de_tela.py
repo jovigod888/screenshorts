@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 
 # FORÇA O TERMINAL A USAR UTF-8
 sys.stdout.reconfigure(encoding="utf-8")
@@ -7,12 +8,12 @@ sys.stdout.reconfigure(encoding="utf-8")
 from datetime import datetime
 import io
 import tkinter as tk
-import customtkinter as ctk
-import easyocr
-import numpy as np
-import pyautogui
+import customtkinter as ctk  # pyright: ignore[reportMissingImports]
+import easyocr  # pyright: ignore[reportMissingImports]
+import numpy as np # pyright: ignore[reportMissingImports]
+import pyautogui  # pyright: ignore[reportMissingModuleSource]
 import pyperclip
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk  # pyright: ignore[reportMissingImports]
 
 from capture_logic import atualizar_historico, retangulo_selecao, texto_de_ocr
 
@@ -215,7 +216,7 @@ class SuperCapturaApp(ctk.CTk):
         data = output.getvalue()[14:]
         output.close()
         try:
-            import win32clipboard
+            import win32clipboard  # pyright: ignore[reportMissingModuleSource]
             win32clipboard.OpenClipboard()
             win32clipboard.EmptyClipboard()
             win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
@@ -342,7 +343,7 @@ if __name__ == "__main__":
     def fechar_aplicacao(self):
         self.destroy()
         with open("historico.json", "w") as f:
-            json.dump(self.historico_arquivos, f)
+            json.dump(self.historico_arquivos, f) # pyright: ignore[reportUndefinedVariable]
 
     # Função para carregar o histórico de um arquivo JSON
     def carregar_historico(self):

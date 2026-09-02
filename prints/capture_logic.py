@@ -1,9 +1,11 @@
 """Lógica pura da captura — sem GUI, para testes em CI."""
 
+import json
 
-def atualizar_historico(historico,img.png, limite=3):
+
+def atualizar_historico(historico, imagem, limite=3):
     """Insere o arquivo no início e mantém só os N mais recentes."""
-    historico.insert(0,img.png)
+    historico.insert(0, imagem)
     if len(historico) > limite:
         historico.pop()
     return historico
@@ -26,45 +28,34 @@ def texto_de_ocr(resultado):
         return "[Nenhum texto detectado]"
     return texto_final
 
+
 def salvar_historico(historico):
     with open("historico.json", "w") as f:
         json.dump(historico, f)
 
+
 def carregar_historico():
-    with open("historico.json", "r") as f:
-        return json.load(f)
+    try:
+        with open("historico.json", "r") as f:
+            return json.load(f)
     except FileNotFoundError:
         return []
     except json.JSONDecodeError:
         return []
 
-def limpar_historico():
-    with open("historico.json", "w") as f:
-        json.dump([], f)
-
-def adicionar_ao_historico(historico,img.png):
-    historico.appendimg.png)
-    salvar_historico(historico)
-    return historico
-
-def remover_do_historico(historico,img.png):
-    historico.removeimg.png)
-    salvar_historico(historico)
-    return historico
 
 def limpar_historico():
     with open("historico.json", "w") as f:
         json.dump([], f)
 
-def adicionar_ao_historico(historico,img.png):    return historico
 
-def remover_do_historico(historico,img.png):
-    historico.removeimg.png)
+def adicionar_ao_historico(historico, imagem):
+    historico.append(imagem)
     salvar_historico(historico)
     return historico
 
-def limpar_historico():
-    with open("historico.json", "w") as f:
-        json.dump([], f)
 
-def adicionar_ao_historico(historico,img.png):    return historico
+def remover_do_historico(historico, imagem):
+    historico.remove(imagem)
+    salvar_historico(historico)
+    return historico
