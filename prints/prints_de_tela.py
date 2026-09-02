@@ -14,6 +14,8 @@ import pyautogui
 import pyperclip
 from PIL import Image, ImageTk
 
+from capture_logic import atualizar_historico, retangulo_selecao, texto_de_ocr
+
 # Configuração do tema visual (Minimalist Dark)
 ctk.set_appearance_mode("Dark")
 ctk.set_default_color_theme("blue")
@@ -149,12 +151,7 @@ class SuperCapturaApp(ctk.CTk):
     # --- ATUALIZAR INTERFACE DO HISTÓRICO ---
     def adicionar_ao_historico(self, nome_arquivo):
         """Adiciona um arquivo ao histórico e atualiza os botões na tela."""
-        # Insere no início da lista para o mais recente ficar no topo/esquerda
-        self.historico_arquivos.insert(0, nome_arquivo)
-        
-        # Mantém apenas os 3 últimos no histórico
-        if len(self.historico_arquivos) > 3:
-            self.historico_arquivos.pop()
+        atualizar_historico(self.historico_arquivos, nome_arquivo)
 
         # Limpa todos os widgets antigos de dentro do frame do histórico
         for widget in self.frame_historico.winfo_children():
@@ -267,14 +264,13 @@ class SuperCapturaApp(ctk.CTk):
     def ao_soltar(self, event):
         end_x, end_y = event.x, event.y
 
-        x1 = min(self.start_x, end_x)
-        y1 = min(self.start_y, end_y)
-        x2 = max(self.start_x, end_x)
-        y2 = max(self.start_y, end_y)
+        x1, y1, x2, y2, valido = retangulo_selecao(
+            self.start_x, self.start_y, end_x, end_y
+        )
 
         self.janela_recorte.destroy()
 
-        if (x2 - x1) < 5 or (y2 - y1) < 5:
+        if not valido:
             self.deiconify()
             return
 
@@ -310,11 +306,9 @@ class SuperCapturaApp(ctk.CTk):
 
             img_np = np.array(imagem)
             resultado = self.leitor.readtext(img_np, detail=0)
-            texto_final = "\n".join(resultado)
+            texto_final = texto_de_ocr(resultado)
 
-            if not texto_final.strip():
-                texto_final = "[Nenhum texto detectado]"
-            else:
+            if texto_final != "[Nenhum texto detectado]":
                 pyperclip.copy(texto_final)
 
             self.deiconify()
