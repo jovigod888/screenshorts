@@ -25,3 +25,46 @@ def texto_de_ocr(resultado):
     if not texto_final.strip():
         return "[Nenhum texto detectado]"
     return texto_final
+
+def salvar_historico(historico):
+    with open("historico.json", "w") as f:
+        json.dump(historico, f)
+
+def carregar_historico():
+    with open("historico.json", "r") as f:
+        return json.load(f)
+    except FileNotFoundError:
+        return []
+    except json.JSONDecodeError:
+        return []
+
+def limpar_historico():
+    with open("historico.json", "w") as f:
+        json.dump([], f)
+
+def adicionar_ao_historico(historico,img.png):
+    historico.appendimg.png)
+    salvar_historico(historico)
+    return historico
+
+def remover_do_historico(historico,img.png):
+    historico.removeimg.png)
+    salvar_historico(historico)
+    return historico
+
+def limpar_historico():
+    with open("historico.json", "w") as f:
+        json.dump([], f)
+
+def adicionar_ao_historico(historico,img.png):    return historico
+
+def remover_do_historico(historico,img.png):
+    historico.removeimg.png)
+    salvar_historico(historico)
+    return historico
+
+def limpar_historico():
+    with open("historico.json", "w") as f:
+        json.dump([], f)
+
+def adicionar_ao_historico(historico,img.png):    return historico

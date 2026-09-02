@@ -325,3 +325,54 @@ class SuperCapturaApp(ctk.CTk):
 if __name__ == "__main__":
     app = SuperCapturaApp()
     app.mainloop()
+
+
+
+    # Função para limpar o histórico
+    def limpar_historico(self):
+        self.historico_arquivos = []
+        self.adicionar_ao_historico("Nenhum arquivo encontrado.")
+        self.label_status.configure(text="Histórico limpo.", text_color="#AAAAAA")
+
+    # Função para fechar a aplicação
+    def fechar_aplicacao(self):
+        self.destroy()
+
+    # Função para fechar a aplicação e salvar o histórico em um arquivo JSON
+    def fechar_aplicacao(self):
+        self.destroy()
+        with open("historico.json", "w") as f:
+            json.dump(self.historico_arquivos, f)
+
+    # Função para carregar o histórico de um arquivo JSON
+    def carregar_historico(self):
+        with open("historico.json", "r") as f:
+            self.historico_arquivos = json.load(f)
+        self.adicionar_ao_historico("Nenhum arquivo encontrado.")
+    def salvar_historico(self):
+        with open("historico.json", "w") as f:
+            json.dump(self.historico_arquivos, f)
+
+    # Função para carregar o histórico de um arquivo JSON
+    def carregar_historico(self):
+        with open("historico.json", "r") as f:
+            self.historico_arquivos = json.load(f)
+        self.adicionar_ao_historico("Nenhum arquivo encontrado.")
+    def salvar_historico(self):
+        with open("historico.json", "w") as f:
+            json.dump(self.historico_arquivos, f)
+
+    # Função para carregar o histórico de um arquivo JSON
+    def carregar_historico(self):
+        with open("historico.json", "r") as f:
+            self.historico_arquivos = json.load(f)
+        self.adicionar_ao_historico("Nenhum arquivo encontrado.")
+    def salvar_historico(self):
+        with open("historico.json", "w") as f:
+            json.dump(self.historico_arquivos, f)
+
+    # Função para carregar o histórico de um arquivo JSON
+    def carregar_historico(self):
+        with open("historico.json", "r") as f:
+            self.historico_arquivos = json.load(f)
+        self.adicionar_ao_historico("Nenhum arquivo encontrado.")
