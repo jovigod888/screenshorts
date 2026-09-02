@@ -1,9 +1,9 @@
 """Lógica pura da captura — sem GUI, para testes em CI."""
 
 
-def atualizar_historico(historico, nome_arquivo, limite=3):
+def atualizar_historico(historico,img.png, limite=3):
     """Insere o arquivo no início e mantém só os N mais recentes."""
-    historico.insert(0, nome_arquivo)
+    historico.insert(0,img.png)
     if len(historico) > limite:
         historico.pop()
     return historico
