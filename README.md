@@ -80,6 +80,14 @@ python prints_de_tela.py
 
 ```
 
+### 📸​ captura de tela
+Interface grafica 
+![alt text](code.png)
+
+print da aplicação
+![alt text](<Captura de tela 2026-09-04 155820.png>)
+
+
 ### 📁 Estrutura de Pastas Gerada
 
 Após realizar as primeiras capturas, a estrutura do seu projeto parecerá com isso:
