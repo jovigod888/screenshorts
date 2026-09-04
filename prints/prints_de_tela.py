@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import threading
 
 # FORÇA O TERMINAL A USAR UTF-8
 sys.stdout.reconfigure(encoding="utf-8")
@@ -38,13 +39,18 @@ class SuperCapturaApp(ctk.CTk):
         print("Carregando leitor de texto (OCR)...")
         self.leitor = easyocr.Reader(["pt", "en"])
         print("[OK] Leitor pronto!")
+        # OCR será carregado em background para não travar a abertura
+        self.leitor = None
+        self._ocr_pronto = threading.Event()
+        self._ocr_thread = threading.Thread(target=self._carregar_ocr, daemon=True)
+        self._ocr_thread.start()
 
         # Pasta de capturas
         self.pasta_destino = "capturas"
         if not os.path.exists(self.pasta_destino):
             os.makedirs(self.pasta_destino)
 
-        # === LISTA PARA ARMAZENAR O HISTÓRICO ===
+        # === LISTA PARA ARMAZENAR HISTÓRICO ===
         self.historico_arquivos = carregar_historico()
 
         # Configurações da Janela Principal (Aumentada um pouco para o histórico)
@@ -161,6 +167,14 @@ class SuperCapturaApp(ctk.CTk):
 
         # Intercepta o evento de fechamento da janela
         self.protocol("WM_DELETE_WINDOW", self.fechar_aplicacao)
+
+    def _carregar_ocr(self):
+        """Carrega o EasyOCR em background para não bloquear a interface."""
+        import easyocr  # pyright: ignore[reportMissingImports]
+        print("Carregando leitor de texto (OCR) em background...")
+        self.leitor = easyocr.Reader(["pt", "en"])
+        self._ocr_pronto.set()
+        print("[OK] Leitor OCR pronto!")
 
     def fechar_aplicacao(self):
         """Salva o histórico antes de fechar."""
@@ -333,6 +347,13 @@ class SuperCapturaApp(ctk.CTk):
             nome_arquivo = f"texto_{timestamp}.png"
             caminho_salvamento = os.path.join(self.pasta_destino, nome_arquivo)
             imagem.save(caminho_salvamento)
+
+            # Espera o OCR estar pronto (se ainda estiver carregando)
+            if not self._ocr_pronto.is_set():
+                self.deiconify()
+                self.label_status.configure(text="Aguardando OCR carregar...", text_color="#FFD700")
+                self.update()
+                self._ocr_pronto.wait()
 
             img_np = np.array(imagem)
             resultado = self.leitor.readtext(img_np, detail=0)
