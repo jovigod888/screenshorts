@@ -16,7 +16,14 @@ import pyautogui  # pyright: ignore[reportMissingModuleSource]
 import pyperclip
 from PIL import Image, ImageTk  # pyright: ignore[reportMissingImports]
 
-from capture_logic import atualizar_historico, retangulo_selecao, texto_de_ocr
+from capture_logic import (
+    atualizar_historico, 
+    retangulo_selecao, 
+    texto_de_ocr, 
+    carregar_historico, 
+    salvar_historico, 
+    limpar_historico
+)
 
 # Configuração do tema visual (Minimalist Dark)
 ctk.set_appearance_mode("Dark")
@@ -43,8 +50,8 @@ class SuperCapturaApp(ctk.CTk):
         if not os.path.exists(self.pasta_destino):
             os.makedirs(self.pasta_destino)
 
-        # === LISTA PARA ARMAZENAR O HISTÓRICO ===
-        self.historico_arquivos = []
+        # === LISTA PARA ARMAZENAR HISTÓRICO ===
+        self.historico_arquivos = carregar_historico()
 
         # Configurações da Janela Principal (Aumentada um pouco para o histórico)
         self.title("Mnmst Capture")
@@ -155,14 +162,44 @@ class SuperCapturaApp(ctk.CTk):
         )
         self.label_status.pack(pady=(0, 15))
 
+        # Atualiza a UI do histórico ao iniciar
+        self.atualizar_interface_historico()
+
+        # Intercepta o evento de fechamento da janela
+        self.protocol("WM_DELETE_WINDOW", self.fechar_aplicacao)
+
+    def _carregar_ocr(self):
+        """Carrega o EasyOCR em background para não bloquear a interface."""
+        import easyocr  # pyright: ignore[reportMissingImports]
+        print("Carregando leitor de texto (OCR) em background...")
+        self.leitor = easyocr.Reader(["pt", "en"])
+        self._ocr_pronto.set()
+        print("[OK] Leitor OCR pronto!")
+
+    def fechar_aplicacao(self):
+        """Salva o histórico antes de fechar."""
+        salvar_historico(self.historico_arquivos)
+        self.destroy()
+
     # --- ATUALIZAR INTERFACE DO HISTÓRICO ---
     def adicionar_ao_historico(self, nome_arquivo):
         """Adiciona um arquivo ao histórico e atualiza os botões na tela."""
         atualizar_historico(self.historico_arquivos, nome_arquivo)
+        self.atualizar_interface_historico()
 
+    def atualizar_interface_historico(self):
         # Limpa todos os widgets antigos de dentro do frame do histórico
         for widget in self.frame_historico.winfo_children():
             widget.destroy()
+
+        if not self.historico_arquivos:
+            self.label_vazio = ctk.CTkLabel(
+                self.frame_historico, 
+                text="Nenhuma captura recente.", 
+                font=ctk.CTkFont(family="Segoe UI", size=11, slant="italic"), 
+                text_color="#444444"
+            )
+            self.label_vazio.pack(anchor="w", pady=5)
 
         # Recria os botões atualizados
         for arquivo in self.historico_arquivos:
@@ -311,6 +348,13 @@ class SuperCapturaApp(ctk.CTk):
             caminho_salvamento = os.path.join(self.pasta_destino, nome_arquivo)
             imagem.save(caminho_salvamento)
 
+            # Espera o OCR estar pronto (se ainda estiver carregando)
+            if not self._ocr_pronto.is_set():
+                self.deiconify()
+                self.label_status.configure(text="Aguardando OCR carregar...", text_color="#FFD700")
+                self.update()
+                self._ocr_pronto.wait()
+
             img_np = np.array(imagem)
             resultado = self.leitor.readtext(img_np, detail=0)
             texto_final = texto_de_ocr(resultado)
@@ -333,53 +377,3 @@ if __name__ == "__main__":
     app = SuperCapturaApp()
     app.mainloop()
 
-
-
-    # Função para limpar o histórico
-    def limpar_historico(self):
-        self.historico_arquivos = []
-        self.adicionar_ao_historico("Nenhum arquivo encontrado.")
-        self.label_status.configure(text="Histórico limpo.", text_color="#AAAAAA")
-
-    # Função para fechar a aplicação
-    def fechar_aplicacao(self):
-        self.destroy()
-
-    # Função para fechar a aplicação e salvar o histórico em um arquivo JSON
-    def fechar_aplicacao(self):
-        self.destroy()
-        with open("historico.json", "w") as f:
-            json.dump(self.historico_arquivos, f) # pyright: ignore[reportUndefinedVariable]
-
-    # Função para carregar o histórico de um arquivo JSON
-    def carregar_historico(self):
-        with open("historico.json", "r") as f:
-            self.historico_arquivos = json.load(f)
-        self.adicionar_ao_historico("Nenhum arquivo encontrado.")
-    def salvar_historico(self):
-        with open("historico.json", "w") as f:
-            json.dump(self.historico_arquivos, f)
-
-    # Função para carregar o histórico de um arquivo JSON
-    def carregar_historico(self):
-        with open("historico.json", "r") as f:
-            self.historico_arquivos = json.load(f)
-        self.adicionar_ao_historico("Nenhum arquivo encontrado.")
-    def salvar_historico(self):
-        with open("historico.json", "w") as f:
-            json.dump(self.historico_arquivos, f)
-
-    # Função para carregar o histórico de um arquivo JSON
-    def carregar_historico(self):
-        with open("historico.json", "r") as f:
-            self.historico_arquivos = json.load(f)
-        self.adicionar_ao_historico("Nenhum arquivo encontrado.")
-    def salvar_historico(self):
-        with open("historico.json", "w") as f:
-            json.dump(self.historico_arquivos, f)
-
-    # Função para carregar o histórico de um arquivo JSON
-    def carregar_historico(self):
-        with open("historico.json", "r") as f:
-            self.historico_arquivos = json.load(f)
-        self.adicionar_ao_historico("Nenhum arquivo encontrado.")
