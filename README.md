@@ -114,4 +114,7 @@ Após realizar as primeiras capturas, a estrutura do seu projeto parecerá com i
     ├── 🖼️ recorte_19-06-12.png
     └── 🖼️ texto_19-06-45.png
 
+```
 
+
+### 🧑‍💻​ app desevolvido por joao vitor 
