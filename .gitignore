@@ -242,3 +242,55 @@ Desktop.ini
 # Opcional: Ignorar prints/telas geradas localmente durante testes
 # Descomente a linha abaixo se não quiser versionar as imagens salvas:
 # *.png
+
+# =========================
+# 1. Arquivos do Projeto
+# =========================
+
+# Ignorar a pasta de capturas de tela (evita subir imagens pesadas para o GitHub)
+capturas/
+
+# Ignorar dados de estado/histórico local
+data/historico.json
+# Se quiser ignorar tudo dentro de data, mas manter a pasta no git, use:
+# data/*
+# !data/.gitkeep
+
+# =========================
+# 2. Caches e Artefatos do Python
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# =========================
+# 3. Ambientes Virtuais (Essencial)
+# =========================
+venv/
+env/
+.env
+.venv
+env.bak/
+venv.bak/
+
+# =========================
+# 4. Ferramentas de Teste (Pytest)
+# =========================
+.pytest_cache/
+.coverage
+htmlcov/
+
+# =========================
+# 5. Configurações de IDEs e SO
+# =========================
+# VS Code
+.vscode/
+
+# PyCharm / IntelliJ
+.idea/
+
+# Mac OS
+.DS_Store
+
+# Windows
+Thumbs.db
