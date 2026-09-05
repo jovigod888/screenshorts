@@ -90,11 +90,16 @@ python prints_de_tela.py
 ```
 
 ### 📸​ captura de tela
-Interface grafica 
-![alt text](code.png)
+ 
+![Texto alternativo da imagem](./assets/interface-grafica.png)
 
-print da aplicação
-![alt text](<Captura de tela 2026-09-04 155820.png>)
+
+
+![Texto alternativo da imagem](./assets/code.png)
+
+
+##
+
 
 
 ### 📁 Estrutura de Pastas Gerada
