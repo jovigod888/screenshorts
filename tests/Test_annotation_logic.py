@@ -1,6 +1,6 @@
 from PIL import Image
 
-from annotation_logic import (  # type: ignore[reportMissingImports]
+from prints.annotation_logic import (
     adicionar_texto,
     aplicar_desfoque,
     desenhar_destaque,

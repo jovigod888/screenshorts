@@ -15,8 +15,8 @@ import customtkinter as ctk
 
 # O módulo é disponibilizado pelo caminho local configurado acima; o analisador
 # estático não consegue inferir esse caminho em tempo de execução.
-import editor_anotacoes  # pyright: ignore[reportMissingImports]
-from editor_anotacoes import EditorDeAnotacoes  # pyright: ignore[reportMissingImports]
+import prints.editor_anotacoes as editor_anotacoes  # pyright: ignore[reportMissingImports]
+from prints.editor_anotacoes import EditorDeAnotacoes  # pyright: ignore[reportMissingImports]
 
 # Evita que askstring/askcolor tentem abrir diálogos interativos reais
 editor_anotacoes.simpledialog.askstring = lambda *a, **k: "teste anotação"

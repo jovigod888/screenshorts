@@ -6,37 +6,18 @@ pessoais ou qualquer informação sensível antes de salvar ou compartilhar
 a captura.
 """
 
-import importlib.util
-import pathlib
 import tkinter as tk
 from tkinter import colorchooser, simpledialog
 
 import customtkinter as ctk  # pyright: ignore[reportMissingImports]
 from PIL import ImageTk  # pyright: ignore[reportMissingImports]
 
-
-def _carregar_annotation_logic():
-    """Carrega o módulo de lógica de anotação mesmo quando o arquivo é
-    executado fora de um pacote Python."""
-    caminho = pathlib.Path(__file__).with_name("annotation_logic.py")
-    if not caminho.exists():
-        raise FileNotFoundError(f"Módulo de anotação não encontrado em: {caminho}")
-
-    spec = importlib.util.spec_from_file_location("annotation_logic", caminho)
-    if spec is None or spec.loader is None:
-        raise ImportError(f"Não foi possível criar o loader para {caminho}")
-
-    modulo = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(modulo)
-    return modulo
-
-
-annotation_logic = _carregar_annotation_logic()
-
-adicionar_texto = annotation_logic.adicionar_texto
-aplicar_desfoque = annotation_logic.aplicar_desfoque
-desenhar_destaque = annotation_logic.desenhar_destaque
-desenhar_seta = annotation_logic.desenhar_seta
+from prints.annotation_logic import (
+    adicionar_texto,
+    aplicar_desfoque,
+    desenhar_destaque,
+    desenhar_seta,
+)
 
 CORES_PRESET = ("#FF3B30", "#FFD60A", "#34C759", "#0A84FF", "#FFFFFF")
 

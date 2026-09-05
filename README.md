@@ -57,6 +57,15 @@ Após soltar o mouse, o comportamento muda baseado no modo selecionado:
 * **Modo Imagem**: Salva o recorte na pasta e tenta enviar a imagem diretamente para a área de transferência usando a API do Windows (`win32clipboard`). Isso permite colar a imagem diretamente no Discord, WhatsApp ou Word usando `Ctrl+V`.
 * **Modo Texto (OCR)**: Salva uma cópia de segurança da imagem, converte o recorte para uma matriz NumPy e passa para o `easyocr`. O texto processado é limpo, injetado na caixa de texto da interface e copiado automaticamente para a área de transferência do usuário.
 
+### 7. Editor de Anotações (Setas, Texto, Marca-texto e Desfoque)
+Antes de qualquer captura ir para o disco — tanto no "Tela Cheia" quanto no "Recortar Imagem" —, uma janela de edição é aberta com a imagem:
+* **Seta**: clique e arraste para desenhar uma seta apontando para o que importa.
+* **Texto**: clique no ponto desejado e digite o texto a ser inserido.
+* **Marca-texto**: clique e arraste para sobrepor um retângulo translúcido colorido, como um marcador de texto.
+* **Desfoque**: clique e arraste sobre a região sensível (senha, CPF, e-mail etc.) para pixelá-la antes de salvar.
+
+A barra de ferramentas conta com seleção de cor (5 predefinidas ou uma cor customizada), **Desfazer** (também via `Ctrl+Z`) e os botões **Salvar** e **Cancelar** (ou tecla `Esc`, que descarta a captura sem gravar nada em disco). O modo "Extrair Texto" (OCR) não passa pelo editor, já que ali o objetivo é justamente ler o texto original da imagem.
+
 ---
 
 ## 🚀 Como Executar o Projeto

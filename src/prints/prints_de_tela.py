@@ -16,7 +16,7 @@ import pyautogui  # pyright: ignore[reportMissingModuleSource]
 import pyperclip
 from PIL import Image, ImageTk  # pyright: ignore[reportMissingImports]
 
-from src.prints.capture_logic import (
+from capture_logic import (
     atualizar_historico, 
     retangulo_selecao, 
     texto_de_ocr, 
@@ -24,6 +24,7 @@ from src.prints.capture_logic import (
     salvar_historico, 
     limpar_historico
 )
+from prints.editor_anotacoes import EditorDeAnotacoes
 
 # Configuração do tema visual (Minimalist Dark)
 ctk.set_appearance_mode("Dark")
@@ -238,12 +239,19 @@ class SuperCapturaApp(ctk.CTk):
 
     def _executar_print_cheio(self):
         try:
+            print_tela = pyautogui.screenshot()
+            self.abrir_editor_anotacoes(print_tela, self.salvar_captura_tela_cheia)
+        except Exception as e:
+            self.deiconify()
+            self.label_status.configure(text=f"Erro: {e}", text_color="#CF6679")
+
+    def salvar_captura_tela_cheia(self, imagem):
+        """Salva em disco a captura de tela cheia já com as anotações aplicadas."""
+        try:
             timestamp = datetime.now().strftime("%H-%M-%S")
             nome_arquivo = f"total_{timestamp}.png"
             caminho_salvamento = os.path.join(self.pasta_destino, nome_arquivo)
-
-            print_tela = pyautogui.screenshot()
-            print_tela.save(caminho_salvamento)
+            imagem.save(caminho_salvamento)
 
             self.deiconify()
             self.adicionar_ao_historico(nome_arquivo) # Atualiza histórico
@@ -251,6 +259,23 @@ class SuperCapturaApp(ctk.CTk):
         except Exception as e:
             self.deiconify()
             self.label_status.configure(text=f"Erro: {e}", text_color="#CF6679")
+
+    # --- FUNÇÃO AUXILIAR: ABRIR O EDITOR DE ANOTAÇÕES ANTES DE SALVAR ---
+    def abrir_editor_anotacoes(self, imagem, callback_salvar):
+        """Abre o editor de anotações (seta, texto, marca-texto, desfoque)
+        antes de salvar a captura, para permitir ocultar dados sensíveis.
+
+        `callback_salvar` é chamado com a imagem final quando o usuário
+        clica em "Salvar". Se ele cancelar, a captura é descartada e a
+        janela principal reaparece sem gravar nada em disco.
+        """
+        def _ao_cancelar():
+            self.deiconify()
+            self.label_status.configure(text="Captura cancelada.", text_color="#777777")
+
+        EditorDeAnotacoes(
+            self, imagem, ao_salvar=callback_salvar, ao_cancelar=_ao_cancelar
+        )
 
     # --- FUNÇÃO AUXILIAR: COPIAR IMAGEM PARA O CLIPBOARD ---
     def copiar_imagem_para_clipboard(self, imagem):
@@ -321,7 +346,8 @@ class SuperCapturaApp(ctk.CTk):
         imagem_recortada = self.print_fundo.crop((x1, y1, x2, y2))
         
         if self.modo_selecao == "imagem":
-            self.processar_apenas_imagem(imagem_recortada)
+            # Abre o editor de anotações antes de salvar o recorte
+            self.abrir_editor_anotacoes(imagem_recortada, self.processar_apenas_imagem)
         else:
             self.processar_texto_ocr(imagem_recortada)
 
