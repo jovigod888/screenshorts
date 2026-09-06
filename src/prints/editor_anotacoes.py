@@ -12,12 +12,22 @@ from tkinter import colorchooser, simpledialog
 import customtkinter as ctk  # pyright: ignore[reportMissingImports]
 from PIL import ImageTk  # pyright: ignore[reportMissingImports]
 
-from prints.annotation_logic import (
-    adicionar_texto,
-    aplicar_desfoque,
-    desenhar_destaque,
-    desenhar_seta,
-)
+try:
+    # Rodando o arquivo direto (prints/ no sys.path) — forma padrão do projeto
+    from annotation_logic import (
+        adicionar_texto,
+        aplicar_desfoque,
+        desenhar_destaque,
+        desenhar_seta,
+    )
+except ImportError:
+    # Fallback para quando "prints" é importado como pacote (ex.: layout src/)
+    from prints.annotation_logic import (
+        adicionar_texto,
+        aplicar_desfoque,
+        desenhar_destaque,
+        desenhar_seta,
+    )
 
 CORES_PRESET = ("#FF3B30", "#FFD60A", "#34C759", "#0A84FF", "#FFFFFF")
 
@@ -327,3 +337,7 @@ class EditorDeAnotacoes(tk.Toplevel):
         self.grab_release()
         self.destroy()
         self.ao_cancelar()
+
+
+
+        
