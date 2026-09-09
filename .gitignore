@@ -293,4 +293,11 @@ htmlcov/
 .DS_Store
 
 # Windows
-Thumbs.db
+Thumbs.dbm
+
+
+# =========================
+# 6. inore arquivos de .exe
+main.exe
+
+

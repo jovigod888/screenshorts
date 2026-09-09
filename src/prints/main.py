@@ -1,3 +1,14 @@
+
+
+
+import os
+import sys
+
+_DIR_ATUAL = os.path.dirname(os.path.abspath(__file__))
+_DIR_PAI = os.path.dirname(_DIR_ATUAL)
+for _caminho in (_DIR_ATUAL, _DIR_PAI):
+    if _caminho not in sys.path:
+        sys.path.insert(0, _caminho)
 import os
 import sys
 import json
@@ -10,43 +21,21 @@ from datetime import datetime
 import io
 import tkinter as tk
 import customtkinter as ctk  # pyright: ignore[reportMissingImports]
-try:
-    import easyocr  # pyright: ignore[reportMissingImports]
-    _ERRO_IMPORTACAO_OCR = None
-except Exception as erro:
-    # Em algumas máquinas o easyocr (via torch) falha ao carregar DLLs nativas —
-    # bloqueio por política de Application Control do Windows, antivírus, falta
-    # de GPU/driver compatível, etc. Nesse caso o OCR fica indisponível, mas o
-    # resto do app (capturas, recorte, editor de anotações) continua funcionando.
-    easyocr = None
-    _ERRO_IMPORTACAO_OCR = erro
+import easyocr  # pyright: ignore[reportMissingImports]
 import numpy as np # pyright: ignore[reportMissingImports]
 import pyautogui  # pyright: ignore[reportMissingModuleSource]
 import pyperclip
 from PIL import Image, ImageTk  # pyright: ignore[reportMissingImports]
 
-try:
-    # Rodando o arquivo direto (prints/ no sys.path) — forma padrão do projeto
-    from capture_logic import (
-        atualizar_historico, 
-        retangulo_selecao, 
-        texto_de_ocr, 
-        carregar_historico, 
-        salvar_historico, 
-        limpar_historico
-    )
-    from editor_anotacoes import EditorDeAnotacoes
-except ImportError:
-    # Fallback para quando "prints" é importado como pacote (ex.: layout src/)
-    from prints.capture_logic import (
-        atualizar_historico, 
-        retangulo_selecao, 
-        texto_de_ocr, 
-        carregar_historico, 
-        salvar_historico, 
-        limpar_historico
-    )
-    from prints.editor_anotacoes import EditorDeAnotacoes
+from capture_logic import (
+    atualizar_historico, 
+    retangulo_selecao, 
+    texto_de_ocr, 
+    carregar_historico, 
+    salvar_historico, 
+    limpar_historico
+)
+from prints.editor_anotacoes import EditorDeAnotacoes
 
 # Configuração do tema visual (Minimalist Dark)
 ctk.set_appearance_mode("Dark")
@@ -58,15 +47,15 @@ class SuperCapturaApp(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        # Inicializa o leitor de texto (OCR) em background, sem travar a abertura
+        # Inicializa o leitor de texto (OCR)
+        print("Carregando leitor de texto (OCR)...")
+        self.leitor = easyocr.Reader(["pt", "en"])
+        print("[OK] Leitor pronto!")
+        # OCR será carregado em background para não travar a abertura
         self.leitor = None
-        self.ocr_disponivel = easyocr is not None
         self._ocr_pronto = threading.Event()
-        if self.ocr_disponivel:
-            self._ocr_thread = threading.Thread(target=self._carregar_ocr, daemon=True)
-            self._ocr_thread.start()
-        else:
-            print(f"[AVISO] OCR indisponível ({_ERRO_IMPORTACAO_OCR}). O botão 'Extrair Texto' ficará desativado.")
+        self._ocr_thread = threading.Thread(target=self._carregar_ocr, daemon=True)
+        self._ocr_thread.start()
 
         # Pasta de capturas
         self.pasta_destino = "capturas"
@@ -130,16 +119,15 @@ class SuperCapturaApp(ctk.CTk):
         # Botão 3: Extrair Texto
         self.btn_ocr = ctk.CTkButton(
             self.frame_botoes,
-            text="Extrair Texto" if self.ocr_disponivel else "Extrair Texto (indisponível)",
+            text="Extrair Texto",
             font=ctk.CTkFont(family="Segoe UI", size=12, weight="bold"),
             height=40,
             corner_radius=6,
             fg_color="#1F2021",
-            hover_color="#2C2D2E" if self.ocr_disponivel else "#1F2021",
-            text_color="#E0E0E0" if self.ocr_disponivel else "#5A5A5A",
+            hover_color="#2C2D2E",
+            text_color="#E0E0E0",
             border_width=1,
             border_color="#3A3B3C",
-            state="normal" if self.ocr_disponivel else "disabled",
             command=lambda: self.iniciar_selecao("texto"),
         )
         self.btn_ocr.pack(side="left", expand=True, fill="x", padx=(4, 0))
@@ -194,6 +182,7 @@ class SuperCapturaApp(ctk.CTk):
 
     def _carregar_ocr(self):
         """Carrega o EasyOCR em background para não bloquear a interface."""
+        import easyocr  # pyright: ignore[reportMissingImports]
         print("Carregando leitor de texto (OCR) em background...")
         self.leitor = easyocr.Reader(["pt", "en"])
         self._ocr_pronto.set()
@@ -390,12 +379,6 @@ class SuperCapturaApp(ctk.CTk):
             self.label_status.configure(text=f"Erro: {e}", text_color="#CF6679")
 
     def processar_texto_ocr(self, imagem):
-        if not self.ocr_disponivel:
-            self.deiconify()
-            self.label_status.configure(
-                text="OCR indisponível nesta máquina (veja o console).", text_color="#CF6679"
-            )
-            return
         try:
             timestamp = datetime.now().strftime("%H-%M-%S")
             nome_arquivo = f"texto_{timestamp}.png"
